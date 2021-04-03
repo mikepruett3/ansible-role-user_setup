@@ -1,7 +1,7 @@
 ---
 - name: Check for existing Ansible service account Public key
   stat:
-    path: '{{ playbook_dir }}/keys/{{ service_account_key_file }}'
+    path: '{{ playbook_dir }}/keys/{{ ansible_service_account_key }}'
   register: file
 
 - name: Create service account for Ansible (Public Key exists)
