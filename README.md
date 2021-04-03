@@ -1,38 +1,63 @@
-Role Name
+Ansible Role: User_Setup
 =========
 
-A brief description of the role goes here.
+Creates local accounts on server, including Ansible Service account.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+The role does not require anyting to run on RHEL and its derivatives.
+
+If desired, an existing Private key file for the Ansible Service account can be provided before role executes.
 
 Role Variables
 --------------
+Available variables are listed below, along with default values (see `defaults/main.yml`):
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+```
+ansible_service_user: myserviceuser
+
+ansible_service_pass_enc: "encrypted-password-for-ansible-service-account"
+
+ansible_service_account_key: "ssh-public-key-file"
+
+regular_user: myuser
+
+regular_pass_enc: "encrypted-password-for-regular-account"
+```
+
+`ansible_service_user` = (**Required**) Name of the Ansible Service user account
+
+`ansible_service_pass_enc` = (**Required**) Encrypted password to be assigned to the Ansible Service user account. Use *mkpasswd --method=sha-512* to generate encrypted password string
+
+`ansible_service_account_key` = (Optional) A previously created SSH Public key for assignment to the Ansible Service user account.
+
+`regular_user` = (**Required**) Name of the regular user account
+
+`regular_pass_enc` = (**Required**) Encrypted password to be assigned to the regular user account. Use *mkpasswd --method=sha-512* to generate encrypted password string
+
+Role variables can be stored with the `hosts.yaml` file, or in the main variables file.
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+None.
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
+``` yaml
     - hosts: servers
       roles:
-         - { role: username.rolename, x: 42 }
+         - mikepruett3.user_setup
+```
 
 License
 -------
 
-BSD
+MIT / BSD
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+Role created by [mikepruett3](https://github.com/mikepruett3) on [Github.com](https://github.com/mikepruett3)
