@@ -15,26 +15,19 @@ Role Variables
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 
 ```
-ansible_service_user: myserviceuser
+user_account: myuseraccount
 
-ansible_service_pass_enc: "encrypted-password-for-ansible-service-account"
+user_pass_enc: "encrypted-password-for-user-account"
 
-ansible_service_account_key: "ssh-public-key-file"
+user_account_key: "ssh-public-key-file"
 
-regular_user: myuser
-
-regular_pass_enc: "encrypted-password-for-regular-account"
 ```
 
-`ansible_service_user` = (**Required**) Name of the Ansible Service user account
+`user_account` = (**Required**) Name of the user account to create
 
-`ansible_service_pass_enc` = (**Required**) Encrypted password to be assigned to the Ansible Service user account. Use *mkpasswd --method=sha-512* to generate encrypted password string
+`user_pass_enc` = (**Required**) Encrypted password to be assigned to the user account. Use *mkpasswd --method=sha-512* to generate encrypted password string
 
-`ansible_service_account_key` = (Optional) A previously created SSH Public key for assignment to the Ansible Service user account.
-
-`regular_user` = (**Required**) Name of the regular user account
-
-`regular_pass_enc` = (**Required**) Encrypted password to be assigned to the regular user account. Use *mkpasswd --method=sha-512* to generate encrypted password string
+`user_account_key` = (Optional) A previously created SSH Public key for assignment to the user account.
 
 Role variables can be stored with the `hosts.yaml` file, or in the main variables file.
 
@@ -49,7 +42,10 @@ Example Playbook
 ``` yaml
     - hosts: servers
       roles:
-         - mikepruett3.user_setup
+         - role: mikepruett3.user_setup
+           vars:
+             user_account: myuser
+             user_pass_enc: "encrypted-password"
 ```
 
 License

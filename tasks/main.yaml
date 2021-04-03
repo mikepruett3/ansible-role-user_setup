@@ -1,76 +1,47 @@
 ---
-- name: Check for existing Ansible service account Public key
+- name: Check for existing Public key for user account
   stat:
-    path: '{{ playbook_dir }}/keys/{{ ansible_service_account_key }}'
+    path: '{{ playbook_dir }}/keys/{{ user_account_key }}'
   delegate_to: localhost
   register: key_file
 
-- name: Create service account for Ansible (Public Key exists)
+- name: Create user account (Public Key exists)
   user:
-    name: '{{ ansible_service_user }}'
-    password: '{{ ansible_service_pass_enc }}'
-    comment: "Ansible Service account"
+    name: '{{ user_account }}'
+    password: '{{ user_password_enc }}'
+    comment: "{{ user_account }}"
     state: present
   when: key_file.stat.exists and key_file.stat.isreg
 
-- name: Add Ansible service account SSH Public key to authorized_keys
+- name: Add user account SSH Public key to authorized_keys
   authorized_key:
-    user: '{{ ansible_service_user }}'
+    user: '{{ user_account }}'
     state: present
-    key: "{{ lookup('file', '{{ playbook_dir }}/keys/{{ ansible_service_account_key }}') }}"
+    key: "{{ lookup('file', '{{ playbook_dir }}/keys/{{ user_account_key }}') }}"
   when: key_file.stat.exists and key_file.stat.isreg
 
-- name: Create service account for Ansible (Public Key does not exists)
+- name: Create user account (Public Key does not exists)
   user:
-    name: '{{ ansible_service_user }}'
-    password: '{{ ansible_service_pass_enc }}'
-    comment: "Ansible Service account"
+    name: '{{ user_account }}'
+    password: '{{ user_password_enc }}'
+    comment: "{{ user_account }}"
     generate_ssh_key: yes
     ssh_key_file: .ssh/id_rsa
     ssh_key_type: ed25519
-    ssh_key_comment: "{{ ansible_service_user }}@{{ ansible_hostname }}"
+    ssh_key_comment: "{{ user_account }}@{{ ansible_hostname }}"
     state: present
   when: not key_file.stat.exists
 
-- name: Download Ansible service account SSH Private key
+- name: Download user account SSH Private key
   fetch:
-    src: '/home/{{ ansible_service_user }}/.ssh/id_rsa'
-    dest: '{{ playbook_dir }}/keys/{{ ansible_service_user }}@{{ ansible_hostname }}'
+    src: '/home/{{ user_account }}/.ssh/id_rsa'
+    dest: '{{ playbook_dir }}/keys/{{ user_account }}@{{ ansible_hostname }}'
     flat: yes
   when: not key_file.stat.exists
 
-- name: Download Ansible service account SSH Public key
+- name: Download user account SSH Public key
   fetch:
-    src: '/home/{{ ansible_service_user }}/.ssh/id_rsa.pub'
-    dest: '{{ playbook_dir }}/keys/{{ ansible_service_user }}@{{ ansible_hostname }}.pub'
+    src: '/home/{{ user_account }}/.ssh/id_rsa.pub'
+    dest: '{{ playbook_dir }}/keys/{{ user_account }}@{{ ansible_hostname }}.pub'
     flat: yes
   when: not key_file.stat.exists
-
-- name: Create regular user account
-  user:
-    name: '{{ regular_user }}'
-    password: '{{ regular_pass_enc }}'
-    comment: "{{ regular_user }}"
-    generate_ssh_key: yes
-    ssh_key_file: .ssh/id_rsa
-    ssh_key_type: ed25519
-    ssh_key_comment: "{{ regular_user }}@{{ ansible_hostname }}"
-    state: present
-
-- name: Download regular user account SSH Private key
-  fetch:
-    src: '/home/{{ regular_user }}/.ssh/id_rsa'
-    dest: '{{ playbook_dir }}/keys/{{ regular_user }}@{{ ansible_hostname }}'
-    flat: yes
-
-- name: Download regular user account SSH Public key
-  fetch:
-    src: '/home/{{ regular_user }}/.ssh/id_rsa.pub'
-    dest: '{{ playbook_dir }}/keys/{{ regular_user }}@{{ ansible_hostname }}.pub'
-    flat: yes
-
-- name: Add regular user account SSH Public key to authorized_keys
-  authorized_key:
-    user: '{{ regular_user }}'
-    state: present
-    key: "{{ lookup('file', '{{ playbook_dir }}/keys/{{ regular_user }}@{{ ansible_hostname }}.pub') }}"
