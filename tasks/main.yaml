@@ -1,7 +1,7 @@
 ---
 - name: Check for existing Public key for user account
   stat:
-    path: '{{ playbook_dir }}/keys/{{ user_account_key }}'
+    path: '{{ key_repository }}/{{ user_account_key }}'
   delegate_to: localhost
   register: key_file
 
@@ -17,7 +17,7 @@
   authorized_key:
     user: '{{ user_account }}'
     state: present
-    key: "{{ lookup('file', '{{ playbook_dir }}/keys/{{ user_account_key }}') }}"
+    key: "{{ lookup('file', '{{ key_repository }}/{{ user_account_key }}') }}"
   when: key_file.stat.exists and key_file.stat.isreg
 
 - name: Create user account (Public Key does not exists)
@@ -35,13 +35,13 @@
 - name: Download user account SSH Private key
   fetch:
     src: '/home/{{ user_account }}/.ssh/id_rsa'
-    dest: '{{ playbook_dir }}/keys/{{ user_account }}@{{ ansible_hostname }}'
+    dest: '{{ key_repository }}/{{ user_account }}@{{ ansible_hostname }}'
     flat: yes
   when: not key_file.stat.exists
 
 - name: Download user account SSH Public key
   fetch:
     src: '/home/{{ user_account }}/.ssh/id_rsa.pub'
-    dest: '{{ playbook_dir }}/keys/{{ user_account }}@{{ ansible_hostname }}.pub'
+    dest: '{{ key_repository }}/{{ user_account }}@{{ ansible_hostname }}.pub'
     flat: yes
   when: not key_file.stat.exists

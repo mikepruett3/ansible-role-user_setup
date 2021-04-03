@@ -3,3 +3,4 @@ user_account: myuser
 # Use mkpasswd --method=sha-512 to generate encrypted password string
 user_password_enc: "encrypted-password-for-user-account"
 user_account_key: "ssh-public-key-file"
+key_repository: "/path/to/key/repo/"
