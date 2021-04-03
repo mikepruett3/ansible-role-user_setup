@@ -1,0 +1,7 @@
+---
+ansible_service_user: myserviceuser
+# Use mkpasswd --method=sha-512 to generate encrypted password string
+ansible_service_pass_enc: "encrypted-password-for-ansible-service-account"
+ansible_service_account_key: "ssh-public-key-file"
+regular_user: myuser
+regular_pass_enc: "encrypted-password-for-regular-account"

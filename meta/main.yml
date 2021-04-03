@@ -1,0 +1,21 @@
+---
+dependencies: []
+
+galaxy_info:
+  role_name: user_setup
+  author: mikepruett3
+  description: Ansible Role for creating and managing users (including Ansible Service Account)
+  company: "www.nixdevil.com"
+  license: "license (BSD, MIT)"
+  min_ansible_version: 2.4
+  platforms:
+  - name: EL
+    versions:
+    - 7
+    - 8
+  galaxy_tags:
+    - server
+    - setup
+    - configuration
+    - users
+    - management
