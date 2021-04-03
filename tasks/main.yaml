@@ -2,6 +2,7 @@
 - name: Check for existing Ansible service account Public key
   stat:
     path: '{{ playbook_dir }}/keys/{{ ansible_service_account_key }}'
+  delegate_to: localhost
   register: key_file
 
 - name: Create service account for Ansible (Public Key exists)
