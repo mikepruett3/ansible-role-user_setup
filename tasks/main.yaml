@@ -37,14 +37,14 @@
     src: '/home/{{ ansible_service_user }}/.ssh/id_rsa'
     dest: '{{ playbook_dir }}/keys/{{ ansible_service_user }}@{{ ansible_hostname }}'
     flat: yes
-    when: not key_file.stat.exists
+  when: not key_file.stat.exists
 
 - name: Download Ansible service account SSH Public key
   fetch:
     src: '/home/{{ ansible_service_user }}/.ssh/id_rsa.pub'
     dest: '{{ playbook_dir }}/keys/{{ ansible_service_user }}@{{ ansible_hostname }}.pub'
     flat: yes
-    when: not key_file.stat.exists
+  when: not key_file.stat.exists
 
 - name: Create regular user account
   user:
