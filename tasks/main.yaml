@@ -1,11 +1,11 @@
 ---
-- name: Check for existing Public key for user account
+- name: Check for existing Public key for user account '{{ user_account }}'
   stat:
     path: '{{ key_repository }}/{{ user_account_key }}'
   delegate_to: localhost
   register: key_file
 
-- name: Create user account (Public Key exists)
+- name: Create user account (Public Key exists) '{{ user_account }}'
   user:
     name: '{{ user_account }}'
     password: '{{ user_password_enc }}'
@@ -13,14 +13,7 @@
     state: present
   when: key_file.stat.exists and key_file.stat.isreg
 
-- name: Add user account SSH Public key to authorized_keys
-  authorized_key:
-    user: '{{ user_account }}'
-    state: present
-    key: "{{ lookup('file', '{{ key_repository }}/{{ user_account_key }}') }}"
-  when: key_file.stat.exists and key_file.stat.isreg
-
-- name: Create user account (Public Key does not exists)
+- name: Create user account (Public Key does not exists) '{{ user_account }}'
   user:
     name: '{{ user_account }}'
     password: '{{ user_password_enc }}'
@@ -32,16 +25,22 @@
     state: present
   when: not key_file.stat.exists
 
-- name: Download user account SSH Private key
+- name: Download user account SSH Private key '{{ user_account }}'
   fetch:
     src: '/home/{{ user_account }}/.ssh/id_rsa'
     dest: '{{ key_repository }}/{{ user_account }}@{{ ansible_hostname }}'
     flat: yes
   when: not key_file.stat.exists
 
-- name: Download user account SSH Public key
+- name: Download user account SSH Public key '{{ user_account }}'
   fetch:
     src: '/home/{{ user_account }}/.ssh/id_rsa.pub'
     dest: '{{ key_repository }}/{{ user_account }}@{{ ansible_hostname }}.pub'
     flat: yes
   when: not key_file.stat.exists
+
+- name: Add user account SSH Public key to authorized_keys '{{ user_account }}'
+  authorized_key:
+    user: '{{ user_account }}'
+    state: present
+    key: "{{ lookup('file', '{{ key_repository }}/{{ user_account_key }}') }}"
