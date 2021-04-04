@@ -21,27 +21,27 @@
     generate_ssh_key: yes
     ssh_key_file: .ssh/id_rsa
     ssh_key_type: ed25519
-    ssh_key_comment: "{{ user_account }}@{{ ansible_hostname }}"
+    ssh_key_comment: "{{ user_account }}@{{ inventory_hostname }}"
     state: present
   when: not key_file.stat.exists
 
 - name: Download the SSH Private key for '{{ user_account }}'
   fetch:
     src: '/home/{{ user_account }}/.ssh/id_rsa'
-    dest: '{{ key_repository }}/{{ user_account }}@{{ ansible_hostname }}'
+    dest: '{{ key_repository }}/{{ user_account }}@{{ inventory_hostname }}'
     flat: yes
   when: not key_file.stat.exists
 
 - name: Download the SSH Public key for '{{ user_account }}'
   fetch:
     src: '/home/{{ user_account }}/.ssh/id_rsa.pub'
-    dest: '{{ key_repository }}/{{ user_account }}@{{ ansible_hostname }}.pub'
+    dest: '{{ key_repository }}/{{ user_account }}@{{ inventory_hostname }}.pub'
     flat: yes
   when: not key_file.stat.exists
 
 - name: Set user_account_key to newly created SSH Public Key of '{{ user_account }}'
   set_fact:
-    user_account_key: '{{ user_account }}@{{ ansible_hostname }}.pub'
+    user_account_key: '{{ user_account }}@{{ inventory_hostname }}.pub'
   when: not key_file.stat.exists
 
 - name: Add user account SSH Public key to authorized_keys '{{ user_account }}'
