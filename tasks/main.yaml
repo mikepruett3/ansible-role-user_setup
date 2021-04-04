@@ -5,7 +5,7 @@
   delegate_to: localhost
   register: key_file
 
-- name: Create user account (Public Key exists) '{{ user_account }}'
+- name: Create user account - '{{ user_account }}' (if Public Key exists)
   user:
     name: '{{ user_account }}'
     password: '{{ user_password_enc }}'
@@ -13,7 +13,7 @@
     state: present
   when: key_file.stat.exists and key_file.stat.isreg
 
-- name: Create user account (Public Key does not exists) '{{ user_account }}'
+- name: Create user account - '{{ user_account }}' (if Public Key does not exists)
   user:
     name: '{{ user_account }}'
     password: '{{ user_password_enc }}'
@@ -25,18 +25,23 @@
     state: present
   when: not key_file.stat.exists
 
-- name: Download user account SSH Private key '{{ user_account }}'
+- name: Download the SSH Private key for '{{ user_account }}'
   fetch:
     src: '/home/{{ user_account }}/.ssh/id_rsa'
     dest: '{{ key_repository }}/{{ user_account }}@{{ ansible_hostname }}'
     flat: yes
   when: not key_file.stat.exists
 
-- name: Download user account SSH Public key '{{ user_account }}'
+- name: Download the SSH Public key for '{{ user_account }}'
   fetch:
     src: '/home/{{ user_account }}/.ssh/id_rsa.pub'
     dest: '{{ key_repository }}/{{ user_account }}@{{ ansible_hostname }}.pub'
     flat: yes
+  when: not key_file.stat.exists
+
+- name: Set user_account_key to newly created SSH Public Key of '{{ user_account }}'
+  set_fact:
+    user_account_key: '{{ user_account }}@{{ ansible_hostname }}.pub'
   when: not key_file.stat.exists
 
 - name: Add user account SSH Public key to authorized_keys '{{ user_account }}'
